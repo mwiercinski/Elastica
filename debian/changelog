@@ -1,3 +1,94 @@
+libelastica-php5 (0.17.6.0) unstable; urgency=low
+
+  [ Oleg Zinchenko ]
+  * improved Elastica_Util: added "replaceBooleanWords" method, to be
+    able replace lucene reserved words
+  * refactored Utils class: use more laconic syntax to replace
+    substrings
+  * [code style] get rid out bad smell at utils class: do not change
+    passed parameter anymore
+
+  [ Nicolas Ruflin ]
+  * release tag added
+  * MergeFactor readded to Elastica_Settings. Should work this time.
+    Index is closed first
+  * Elastica_Index_Settings udpated. index. removed in front of get =>
+    simpler get.
+  * build script enhanced with setup. Cluster and Node shutdown added
+  * Elastica_Node::getPort() and getIp() added. Testing for shutdown
+    added but skipped.
+  * Elastica_Filter_Abstract enhanced for more general filter
+    implementations
+  * directory whiteliste for phpunit code coverage added
+  * MoreLikeThis query merged and fixed
+  * Abstract class Elastica_Param added to simplify query, filter and
+    facet handling
+  * Elastica_Query_MoreLikeThis refactoring with Elastica_Param
+  * Added Missing param file
+  * fix missing . in phpunit build file.
+  * gource added to build file
+  * Elastica_Filter_Exists moved to new Elastica_Param methods. Tests
+    added.
+  * Move Ids to new Elastica_Param methods
+  * Not filter uses now Elastica_Param
+  * And moved to new param methods
+  * MatchAll moved to Elastica_Params.
+  * Test for Elastica_Query_Array added
+  * Fuzzy query uses Elastica_Param. Test added
+  * Elastica_Query_Wildcard uses now Elastica_Param. Test added
+  * Elastica_Query_Range now uses Elastica_Param. Test added
+  * Polygon test updated / fixed
+  * Bool query refactored to use Elastica_Param.
+  * test for not implemented exception added
+  * Elastica_Query_ConstantScore improved and fixed
+  * unsued class Elastica_Admin and Elastica_Field removed
+  * Elastica_Query_HasChild refactored to use Elastica_Param
+  * Elastica_Query_Text added
+  * Elastica_Param tests udpated
+  * changes file updated with GeoBoundingBox changes
+  * fix Elastic_Query_Text
+  * text test typo fixed
+  * Sets document id automatically if left empty.
+  * readme updated
+  * Keep curl resource over multiple requests
+  * basic benchmark test added
+  * change.text updated
+
+  [ Raul Martinez Jr ]
+  * Elastic_ResultSet implements Countable - this is useful for creating
+    a customized Zend Framework paginator using Elastica_ResultSet
+  * Added two methods in Elastica_Response; getEngineTime() and
+    getShardStatistics() and corresponding unit tests
+  * commiting other php files as mentioned in 95f99ad
+  * Small fix to the ResponseTest.php
+  * Revert "Small fix to the ResponseTest.php"
+  * Ensure that Elastica_Exception_ExpectedFieldNotFound exception is
+    thrown when [took] and [_shards] are not found in the responect JSON
+    decoded data
+  * resurrecting hasFacets()
+  * Adding MoreLikeThis Query and Unit Test
+  * Fixes based on the code review comments
+  * Small fix to not include a parameter with null value
+
+  [ Michael Maclean ]
+  * Add GeoPolygon filter
+  * Fix points in polygon
+
+  [ Shaun Farrell ]
+  * Removed the ?> at the end of the file.
+  * Added return $this to methods so that users can chain methods when
+    added Elastica_Documents.
+  * Added return value to setLatitude()
+  * Added return value to addFilter()
+  * Added return value to addField()
+
+  [ Fabian Vogler ]
+  * Use new Elastica_Param and new coordinates input format
+  * Fix tabs
+  * Fix for coordinates
+
+ -- Maciej Wiercinski <maciej@wiercinski.net>  Tue, 16 Aug 2011 11:20:49 +0100
+
 libelastica-php5 (0.17.1.0) unstable; urgency=low
 
   * Initial Release.
