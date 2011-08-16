@@ -7,7 +7,7 @@ Standards-Version: 3.8.4
 Homepage: https://github.com/ruflin/Elastica
 
 Package: libelastica-php5
-Architecture: any
+Architecture: all 
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: PHP client for Elasticsearch
  PHP client for Elasticsearch
