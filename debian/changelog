@@ -1,3 +1,62 @@
+libelastica-php5 (0.17.6.1) unstable; urgency=low
+
+  [ Nicolas Ruflin ]
+  * experimental setCache for filter added
+  * Typo in Terms query fixed (issue #74)
+  * basic Elastica_Query::setSort test/example
+  * refactor Elastica_Query to use Elastica_Param. Tests added
+  * Elastica_Query_Terms refactoring
+  * querystring simplified and tested
+  * https transport added
+  * Tests for Elastica_Query_MoreLikeThis added
+  * Test for FuzzyLikeThis and MoreLikeThis queries added
+  * codesniffer cleanup
+  * Refactor facets to also use Elastica_Param
+  * Code cleanup and more tests added
+  * Elastica_Filter_Prefix test added
+  * Refactor range and query filter.
+  * setParam removed from Terms as it is a duplicated
+  * Issue #86 resolved
+  * issue #88 resolved
+  * Preparing release v0.17.6.1
+
+  [ Tim Rupp ]
+  * Added ability for the Elastica_Client to accept parameters of type
+    Elastica_Index and Elastica_Type to the deleteIds method. Added mock
+    methods for testing these new features to the Elastica_ClientTest
+    class
+  * Finished fleshing out the mock tests to test the new accepted
+    variable types to deleteIds
+  * Corrected return value of Elastica_Response hasError which specified
+    that a boolean true be returned instead of the error string
+  * Added test to check to see that the return value from hasError is
+    correct when deleting an unknown index
+  * Removed colon that was causing syntax error. Added inline docs to
+    describe why I am asserting that false should be true
+  * Use fail method of phpunit instead of asserting true
+  * Perhaps this is a more clear explanation for a failure message
+
+  [ Maciej Wiercinski ]
+  * ConstantScore accepting filter as a constructor parameter
+  * Added Elastica_Filter_Missing
+  * Slight refactoring.
+  * Elastica_Query_QueryString - added setAnalyzer() and refactored a
+    bit.
+
+  [ Fabian Vogler ]
+  * Adding Has Child Filter
+  * Add useful constructor to range filter
+  * Avoid PHP notice and return empty array
+
+  [ Jonathan Becker ]
+  * Typo: script_field should be script_fields
+
+  [ Jasper van Wanrooy ]
+  * Make the QueryString query type feature complete.
+  * Default the previous boost to 1.0 for the QueryString query.
+
+ -- Maciej Wiercinski <maciej@wiercinski.net>  Wed, 05 Oct 2011 13:35:35 +0100
+
 libelastica-php5 (0.17.6.0) unstable; urgency=low
 
   [ Oleg Zinchenko ]
