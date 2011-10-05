@@ -1,3 +1,9 @@
+libelastica-php5 (0.17.7.0) unstable; urgency=low
+
+  * Tagged for 0.17.7.0. 
+
+ -- Maciej Wiercinski <maciej@wiercinski.net>  Wed, 05 Oct 2011 13:52:04 +0100
+
 libelastica-php5 (0.17.6.1) unstable; urgency=low
 
   [ Nicolas Ruflin ]
