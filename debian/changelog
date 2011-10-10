@@ -1,3 +1,18 @@
+libelastica-php5 (0.17.8.1) unstable; urgency=low
+
+  [ Nicolas Ruflin ]
+  * convertDate function moved to Elastica_Util.
+  * copy-paste error fixed in convertDate
+  * Tests updated, some refactoring
+  * getDocument if no source improved
+  * source typo fixed in elastica_type
+  * ugly typo in Elastica_Type_Abstract::converDate fixed
+
+  [ Michael Maclean ]
+  * Update URL to ElasticSearch REST API documentation
+
+ -- Maciej Wiercinski <maciej@wiercinski.net>  Mon, 10 Oct 2011 10:57:32 +0100
+
 libelastica-php5 (0.17.7.0) unstable; urgency=low
 
   * Tagged for 0.17.7.0. 
