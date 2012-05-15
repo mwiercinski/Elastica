@@ -1,3 +1,197 @@
+libelastica-php5 (0.19.3.0) unstable; urgency=low
+
+  [ ruflin ]
+  * lower case prefix filter tests added
+  * Changes updated. Type in filtertest fixed
+  * add default (empty) optype
+  * small bug fixed for ES 0.18.1
+  * Simple Bulk memory test added
+  * bulk update cleanup
+  * TTL for document and mapping added
+  * Elastica_Query_Nested added
+  * Elastica_Query_Nested added
+  * Elastica_Index_Stats added
+  * Release v0.18.4.0 added
+  * Elastica_Log object added for logging.
+  * improved request logging to be able to directly paste it into the terminal
+  * adding documentation for logging
+  * improved log tests
+  * doc and README change
+  * Release v0.18.4.1 added
+  * do multiple server test with same host
+
+  [ Robert Katzki ]
+  * Added config file for docblox to build API.
+  * HowTo 'Buildung API' added to the Readme.
+  * Integrated DocBlox in build process.
+  * Cleaned up README
+  * Re-Added travis build status
+  * Added more-like-this API.
+  * Using http_build_query in moreLikeThis API.
+  * Updated logging. Log before request and only output args, when there are some, just like the request.
+  * Updated logging. Adding '' around the path.
+  * Mark moreLikeThisTest incomplete.
+
+  [ jwilson ]
+  * Add Elastica_Query_CustomFiltersScore
+  * Type filter
+
+  [ wuyang ]
+  * ignore netbeans setting
+  * Support custom_score and top_children query
+  * Add 'op_type' param
+  * Fix CustomScore construct bug Add test case for CustomScore Query
+
+  [ Ben Lumley ]
+  * Spotted a typo (I think) in this test.
+  * Copied Elastica_Query_Nested to create Elastica_Filter_Nested - works for me, in production, but no tests.
+  * Update README.markdown
+
+  [ Fabian Vogler ]
+  * Adding commented out var_dump
+  * Added Travis support
+  * Added elasticsearch download and run
+  * Run elasticsearch in foreground
+  * Run elasticsearch in background
+  * Don't run elasticsearch
+  * Run elastic search in background
+  * Wait until elasticsearch is ready
+  * Only load Elastica classes
+  * Added build status image
+  * Removing var_dump
+  * Install elasticsearch file plugin
+  * Updated changelog
+  * Install memcache
+  * Added -y flat for memcache installation
+  * Install memcache with PECL
+  * Install memcache by hand
+  * Install Pake
+  * Build memcache extension
+  * Install memcache extension
+  * Run elastic search with -server
+  * Run elastic search with -server
+  * Disable auto discovery of ElasticSearch
+  * Fixed sed
+  * Updated to elasticsearch 0.19
+  * Two shards for Percolator test
+
+  [ daFish ]
+  * Added convenience methods for adding array of types and indexes.
+  * Added unit tests
+  * Renamed addIndexes() to addIndices().
+
+  [ Nicolas Ruflin ]
+  * testAddDocumentVersion added
+  * Prepare release v0.18.5.0
+  * change in doc not found implemented
+  * Elastica_Test implementation
+  * simplify TypeTests
+  * Elastica Response and Search updated to Elastica_Test
+  * Elastica_QueryTest updated
+  * createIndex refactored to protected method
+  * log test made compatible with windows
+  * elasticsearch test files updated
+  * tests refactoring
+  * index file test fixed
+  * Elastica_Query_Term and Elastica_Filter_Term refactoring
+  * remove unnecessary error_log from test
+  * make Elastica_Type::getType() deprecated
+  * test for exclude file source added
+  * Elastica_Percolator and tests added
+  * Elastica_Document::addFileContent added
+  * Code styles cleanup
+  * Text parent mapping
+  * prepare release v0.18.6.0
+  * Mapping example for Jose D.
+  * Add refresh method to percolator test.
+  * Test if travis works again
+  * Elastica_Type::deleteByQuery implemented
+  * Ready Only feature for index and cluster added. This feature is ES >0.19.0 only
+  * lint check included in build script
+  * Elastica_Index::exist() and Elastica_Cluster::getIndexNames() added
+  * #120 Add the possiblity to add path or url in config for request
+  * #106 #107 Allow to set curl params over client config
+  * Update doc with newest features
+  * Vagrantfile added with elasticsearch 0.19.0-snapshot inside.
+  * Update vagrant file to vagrant 0.9.2
+  * composer.json for packagist added
+  * mlt_fileds in Elastica_Query_MoreLikeThis renamed to fields (as of ES 0.19.0). Percolator test fixed
+  * Ignore build folder added
+  * Link how to install attachment mapper updated
+  * Elastica_Node_Info updated to new behaviour in ES 0.19.0
+  * Prepare release v0.19.0.0
+  * Bool test for google groups discussion added
+  * Typoe in markTestIncomplete fixed
+  * Enable non persistent connections to fix percolator and moreLikeThis test
+  * Update travis loading file
+  * Query param to request added
+  * Release v0.19.3.0
+
+  [ Xawiers ]
+  * Added percolator on document index
+
+  [ Ocean ]
+  * fix can't search 0 bug
+
+  [ nippo ]
+  * Is it the right API for nested filters?
+  * Added a test for nested filter
+  * Maybe fixed test
+
+  [ nurikabe ]
+  * Fix typo.
+
+  [ Shaun Farrell ]
+  * * Modified limit defaults on Search methods
+  * * Updated Default limit to to null.  Now defaults to 10 unless otherwise specified. * Updated TestCases
+  * * Added ability to delete index type. * Added unit test to make sure that index type get deleted.
+  * * Added getMapping to the index to return all the mappings of an index
+  * * Fixed test to look at Exception message.
+
+  [ scragg0x ]
+  * _convertRequest can use alot of memory on a bulk request and it occurs anyways for no real reason that I can see when _log == false.
+  * Update lib/Elastica/Log.php
+  * I was tracking down a memory leak and found that the curl handle was the source.  I honestly don't know what it's persisting.  In any case, I modified it to close the handle when it's done.  I don't think it will make a difference in performance to close/re-init in this case.
+  * Turns out that returntransfer == true will leak memory.  I turned it off and used an output buffer instead.  I have tested it and it works.
+  * I replaced the to(Camel|Snake)Case functions because it was using the e modifier with preg.  I disallow it on my web applications with Suhosin (because it's essentially like eval() which I also disable), so it was raising alerts and ending execution.  The changes give the same results and and are much faster.
+
+  [ James Constable ]
+  * Sends percolate request when running a bulk index.
+
+  [ Andreas Sandberg ]
+  * Adding rewrite params to QueryString
+
+  [ Marco Oliveira ]
+  * Fixed typo
+
+  [ Gerard Matthew ]
+  * Adding GeoDistance Facet support
+
+  [ marcooliveira ]
+  * Fixed some typos and improved the english
+
+  [ comulinux ]
+  * Update lib/Elastica/Search.php
+  * Update lib/Elastica/Index.php
+  * Update lib/Elastica/Search.php
+  * Update lib/Elastica/Index.php
+  * Update lib/Elastica/Search.php
+  * Added exception for invalid options in search method
+  * Added exception for invalid options in create method.
+  * Update lib/Elastica/Index.php
+  * Update test/lib/Elastica/SearchTest.php
+  * Test classes modified
+  * Added test methods and support for search_type in Search->search method
+  * Filled array of new Elastica_Documents in a loop
+
+  [ unknown ]
+  * Added throw Elastica_Exception_Invalid for unknown options
+  * Added test for search method options
+
+  [ Maciej Wiercinski ]
+
+ -- Maciej Wiercinski <maciej@wiercinski.net>  Tue, 15 May 2012 16:53:38 +0100
+
 libelastica-php5 (0.17.8.1) unstable; urgency=low
 
   [ Nicolas Ruflin ]
