@@ -3,11 +3,10 @@
  * Elastica search object
  *
  * @category Xodoa
- * @package Elastica
- * @author Nicolas Ruflin <spam@ruflin.com>
+ * @package  Elastica
+ * @author   Nicolas Ruflin <spam@ruflin.com>
  */
-class Elastica_Search
-{
+class Elastica_Search {
 	protected $_indices = array();
 	protected $_types = array();
 
@@ -46,6 +45,20 @@ class Elastica_Search
 	}
 
 	/**
+	 * Add array of indices at once
+	 *
+	 * @param array $indices
+	 * @return Elastica_Search
+	 */
+	public function addIndices(array $indices = array()) {
+		foreach ($indices as $index) {
+			$this->addIndex($index);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Adds a type to the current search
 	 *
 	 * @param Elastica_Type|string $type Type name or object
@@ -62,6 +75,20 @@ class Elastica_Search
 		}
 
 		$this->_types[] = $type;
+
+		return $this;
+	}
+
+	/**
+	 * Add array of types
+	 *
+	 * @param array $types
+	 * @return Elastica_Search
+	 */
+	public function addTypes(array $types = array()) {
+		foreach ($types as $type) {
+			$this->addType($type);
+		}
 
 		return $this;
 	}
@@ -129,13 +156,51 @@ class Elastica_Search
 	 * Search in the set indices, types
 	 *
 	 * @param mixed $query
+	 * @param int|array $options OPTIONAL Limit or associative array of options (option=>value)
 	 * @return Elastica_ResultSet
 	 */
-	public function search($query) {
-		$query = Elastica_Query::create($query);
-		$path = $this->getPath();
 
-		$response = $this->getClient()->request($path, Elastica_Request::GET, $query->toArray());
+	public function search($query, $options = null) {
+			
+		$query = Elastica_Query::create($query);
+		$path = $this -> getPath();
+		
+		if (is_int($options)) {
+			
+			$query -> setLimit($options);
+			
+		} else if (is_array($options)) {
+			
+			foreach ($options as $key => $value) {
+			    if (empty($value)){
+                    throw new Elastica_Exception_Invalid('Invalid value '.$value.' for option '.$key);
+                }else{
+    			    $path_separator = (strpos($path, '?'))?'&':'?';
+    				switch ($key) {
+    					case 'limit' :
+    						$query -> setLimit($value);
+    						break;
+    					case 'routing' :
+    						if (!empty($value)) {
+    							$path .= $path_separator.'routing=' . $value;
+    						}
+    						break;
+                        case 'search_type':
+                            if (!empty($value)) {
+                                $path .= $path_separator.'search_type=' . $value;
+                            }
+                            break;
+                        default:
+                            throw new Elastica_Exception_Invalid('Invalid option '.$key);
+                        break;
+    				}
+                }
+			}
+			
+		}
+		
+		$response = $this -> getClient() -> request($path, Elastica_Request::GET, $query -> toArray());
+		
 		return new Elastica_ResultSet($response);
 	}
 }

@@ -50,12 +50,30 @@ class Elastica_Index implements Elastica_Searchable
 	/**
 	 * Returns the current status of the index
 	 *
-	 * @link http://www.elasticsearch.com/docs/elasticsearch/rest_api/admin/indices/status/
-	 * @return array Index status
+	 * @return Elastica_Index_Status Index status
 	 */
 	public function getStatus() {
 		return new Elastica_Index_Status($this);
 	}
+
+	/**
+	 * @return ELastica_Index_Stats
+	 */
+	public function getStats() {
+		return new Elastica_Index_Stats($this);
+	}
+
+    /**
+     * Gets all the type mappings for an index.
+     *
+     * @return array
+     */
+    public function getMapping() {
+        $path = '_mapping';
+
+        $response = $this->request($path, Elastica_Request::GET);
+        return $response->getData();
+    }
 
 	/**
 	 * Returns the index settings object
@@ -115,39 +133,83 @@ class Elastica_Index implements Elastica_Searchable
 		return $this->request('_refresh', Elastica_Request::POST, array());
 	}
 
-	/**
+/**
 	 * Creates a new index with the given arguments
 	 *
 	 * @param array $args OPTIONAL Arguments to use
-	 * @param bool $recreate OPTIONAL Deletes index first if already exists (default = false)
+	 * @param bool|array $options OPTIONAL 
+	 * 			bool=> Deletes index first if already exists (default = false). 
+	 * 			array => Associative array of options (option=>value)  
 	 * @return array Server response
 	 * @link http://www.elasticsearch.com/docs/elasticsearch/rest_api/admin/indices/create_index/
 	 */
-	public function create(array $args = array(), $recreate = false) {
-		if ($recreate) {
-			try {
-				$this->delete();
-			} catch(Elastica_Exception_Response $e) {
-				// Table can't be deleted, because doesn't exist
+	public function create(array $args = array(), $options = null) {
+		$path = '';
+		if (is_bool($options)) {
+			if ($options) {
+				try {
+					$this -> delete();
+				} catch(Elastica_Exception_Response $e) {
+					// Table can't be deleted, because doesn't exist
+				}
+			}
+		} else if (is_array($options)) {
+			foreach ($options as $key => $value) {
+                if (empty($value)){
+                    throw new Elastica_Exception_Invalid('Invalid value '.$value.' for option '.$key);
+                }else{
+                    $path_separator = (strpos($path, '?'))?'&':'?';
+                    switch ($key) {
+                        case 'recreate' :
+                            try {
+                              $this -> delete();
+                            } catch(Elastica_Exception_Response $e) {
+                              // Table can't be deleted, because doesn't exist
+                            }
+                        break;
+                        case 'routing' :
+                            if (!empty($value)) {
+                                $path .= $path_separator.'routing=' . $value;
+                            }
+                            break;
+                        default:
+                            throw new Elastica_Exception_Invalid('Invalid option '.$key);
+                        break;
+                    }
+                }
 			}
 		}
-		return $this->request('', Elastica_Request::PUT, $args);
+		return $this -> request($path, Elastica_Request::PUT, $args);
 	}
-
 	/**
-	 * Searchs in this index
+	 * Checks if the given index is already created
 	 *
-	 * @param string|array|Elastica_Query $query Array with all query data inside or a Elastica_Query object
-	 * @return Elastica_ResultSet ResultSet with all results inside
-	 * @see Elastica_Searchable::search
+	 * @return bool True if index exists
 	 */
-	public function search($query) {
-		$query = Elastica_Query::create($query);
-		$path = '_search';
-
-		$response = $this->request($path, Elastica_Request::GET, $query->toArray());
-		return new Elastica_ResultSet($response);
+	public function exists() {
+		$cluster = new Elastica_Cluster($this->getClient());
+		return in_array($this->getName(), $cluster->getIndexNames());
 	}
+
+    /**
+     * Searchs in this index
+     *
+     * @param string|array|Elastica_Query $query Array with all query data inside or a Elastica_Query object
+     * @param int $limit OPTIONAL
+     * @return Elastica_ResultSet ResultSet with all results inside
+     * @see Elastica_Searchable::search
+     */
+    public function search($query, $limit = null) {
+        $query = Elastica_Query::create($query);
+
+        if (!is_null($limit)) {
+            $query->setLimit($limit);
+        }
+        $path = '_search';
+
+        $response = $this->request($path, Elastica_Request::GET, $query->toArray());
+        return new Elastica_ResultSet($response);
+    }
 
 	/**
 	 * Counts results of query
@@ -302,10 +364,11 @@ class Elastica_Index implements Elastica_Searchable
 	 * @param string $path Path to call
 	 * @param string $method Rest method to use (GET, POST, DELETE, PUT)
 	 * @param array $data OPTIONAL Arguments as array
+	 * @param array $query OPTIONAL Query params
 	 * @return Elastica_Response Response object
 	 */
-	public function request($path, $method, $data = array()) {
+	public function request($path, $method, $data = array(), array $query = array()) {
 		$path = $this->getName() . '/' . $path;
-		return $this->getClient()->request($path, $method, $data);
+		return $this->getClient()->request($path, $method, $data, $query);
 	}
 }

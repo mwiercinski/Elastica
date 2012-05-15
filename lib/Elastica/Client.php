@@ -39,11 +39,16 @@ class Elastica_Client
 	protected $_config = array(
 		'host' => self::DEFAULT_HOST,
 		'port' => self::DEFAULT_PORT,
+		'path' => '',
+		'url' => null,
 		'transport' => self::DEFAULT_TRANSPORT,
+		'persistent' => true,
 		'timeout' => self::TIMEOUT,
 		'headers' => array(),
 		'servers' => array(),
+		'curl' => array(),
 		'roundRobin' => false,
+		'log' => false,
 	);
 
 	/**
@@ -60,7 +65,7 @@ class Elastica_Client
 	 *
 	 * @param array $config Params
 	 */
-	public function setConfig($config) {
+	public function setConfig(array $config) {
 		foreach ($config as $key => $value) {
 			$this->_config[$key] = $value;
 		}
@@ -80,11 +85,11 @@ class Elastica_Client
 			return $this->_config;
 		}
 
-		if (isset($this->_config[$key])) {
-			return $this->_config[$key];
+		if (!array_key_exists($key, $this->_config)) {
+			throw new Elastica_Exception_Invalid('Config key is not set: ' . $key);
 		}
 
-		return $this->_config;
+		return $this->_config[$key];
 	}
 
 	/**
@@ -186,23 +191,29 @@ class Elastica_Client
 		$params = array();
 
 		foreach($docs as $doc) {
-			$action = array(
-				'index' => array(
-					'_index' => $doc->getIndex(),
-					'_type' => $doc->getType(),
-					'_id' => $doc->getId()
-				)
+			
+			$indexInfo = array(
+				'_index' => $doc->getIndex(),
+				'_type' => $doc->getType(),
+				'_id' => $doc->getId()
 			);
-
-			if($doc->getVersion() > 0) {
-				$action['index']['_version'] = $doc->getVersion();
+			
+			$version = $doc->getVersion();
+			if (!empty($version)) {
+				$indexInfo['_version'] = $version;
+			}
+			
+			$parent = $doc->getParent();
+			if (!empty($parent)) {
+				$indexInfo['_parent'] = $parent;
+			}
+						
+			$percolate = $doc->getPercolate();
+			if (!empty($percolate)) {
+				$indexInfo['percolate'] = $percolate;
 			}
 
-			if($doc->getParent()) {
-				$action['index']['_parent'] = $doc->getParent();
-			}
-
-			$params[] = $action;
+			$params[] = array('index' => $indexInfo);
 			$params[] = $doc->getData();
 		}
 		return $this->bulk($params);
@@ -241,8 +252,8 @@ class Elastica_Client
 	 * Deletes documents with the given ids, index, type from the index
 	 *
 	 * @param array $ids Document ids
-	 * @param string $index Index name
-	 * @param string $type Type of documents
+	 * @param string|Elastica_Index $index Index name
+	 * @param string|Elastica_Type $type Type of documents
 	 * @return Elastica_Response Response object
 	 * @throws Elastica_Exception If ids is empty
 	 * @link http://www.elasticsearch.com/docs/elasticsearch/rest_api/bulk/
@@ -329,10 +340,11 @@ class Elastica_Client
 	 * @param string $path Path to call
 	 * @param string $method Rest method to use (GET, POST, DELETE, PUT)
 	 * @param array $data OPTIONAL Arguments as array
+	 * @param array $query OPTIONAL Query params
 	 * @return Elastica_Response Response object
 	 */
-	public function request($path, $method, $data = array()) {
-		$request = new Elastica_Request($this, $path, $method, $data);
+	public function request($path, $method, $data = array(), array $query = array()) {
+		$request = new Elastica_Request($this, $path, $method, $data, $query);
 		return $request->send();
 	}
 

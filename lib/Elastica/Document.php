@@ -3,8 +3,8 @@
  * Single document stored in elastic search
  *
  * @category Xodoa
- * @package Elastica
- * @author Nicolas Ruflin <spam@ruflin.com>
+ * @package  Elastica
+ * @author   Nicolas Ruflin <spam@ruflin.com>
  */
 class Elastica_Document {
 
@@ -29,11 +29,21 @@ class Elastica_Document {
 	protected $_parent = '';
 
 	/**
+	 * @var string Optype
+	 */
+	protected $_optype = '';
+
+	/**
+	 * @var string Percolate
+	 */
+	protected $_percolate = '';
+
+	/**
 	 * Creates a new document
 	 *
-	 * @param int $id OPTIONAL $id Id is create if empty
-	 * @param array $data OPTIONAL Data array
-	 * @param string $type OPTIONAL Type name
+	 * @param int    $id    OPTIONAL $id Id is create if empty
+	 * @param array  $data  OPTIONAL Data array
+	 * @param string $type  OPTIONAL Type name
 	 * @param string $index OPTIONAL Index name
 	 */
 	public function __construct($id = '', array $data = array(), $type = '', $index = '') {
@@ -55,8 +65,8 @@ class Elastica_Document {
 	/**
 	 * Adds the given key/value pair to the document
 	 *
-	 * @param string $key Document entry key
-	 * @param mixed $value Document entry value
+	 * @param string $key   Document entry key
+	 * @param mixed  $value Document entry value
 	 * @return Elastica_Document
 	 */
 	public function add($key, $value) {
@@ -70,12 +80,12 @@ class Elastica_Document {
 	 * To use this feature you have to call the following command in the
 	 * elasticsearch directory:
 	 * <code>
-	 * ./bin/plugin install mapper-attachments
+	 * ./bin/plugin -install elasticsearch/elasticsearch-mapper-attachments/1.2.0
 	 * </code>
 	 * This installs the tika file analysis plugin. More infos about supported formats
 	 * can be found here: {@link http://tika.apache.org/0.7/formats.html}
 	 *
-	 * @param string $key Key to add the file to
+	 * @param string $key      Key to add the file to
 	 * @param string $filepath Path to add the file
 	 * @param string $mimeType OPTIONAL Header mime type
 	 * @return Elastica_Document
@@ -84,11 +94,7 @@ class Elastica_Document {
 		$value = base64_encode(file_get_contents($filepath));
 
 		if (!empty($mimeType)) {
-			$value = array(
-				'_content_type' => $mimeType,
-				'_name' => $filepath,
-				'content' => $value,
-			);
+			$value = array('_content_type' => $mimeType, '_name' => $filepath, 'content' => $value,);
 		}
 
 		$this->add($key, $value);
@@ -96,22 +102,28 @@ class Elastica_Document {
 	}
 
 	/**
+	 * @param string $key     Document key
+	 * @param string $content Raw file content
+	 * @return Elastica_Document
+	 */
+	public function addFileContent($key, $content) {
+		return $this->add($key, base64_encode($content));
+	}
+
+	/**
 	 * Adds a geopoint to the document
 	 *
 	 * Geohashes re not yet supported
 	 *
-	 * @param string $key Field key
-	 * @param float $latitude Latitud value
-	 * @param float $longitude Longitude value
+	 * @param string $key       Field key
+	 * @param float  $latitude  Latitud value
+	 * @param float  $longitude Longitude value
 	 * @link http://www.elasticsearch.com/docs/elasticsearch/mapping/geo_point/
 	 * @return Elastica_Document
 	 */
 	public function addGeoPoint($key, $latitude, $longitude) {
 
-		$value = array(
-			'lat' => $latitude,
-			'lon' => $longitude,
-		);
+		$value = array('lat' => $latitude, 'lon' => $longitude,);
 
 		$this->add($key, $value);
 		return $this;
@@ -126,6 +138,16 @@ class Elastica_Document {
 	public function setData(array $data) {
 		$this->_data = $data;
 		return $this;
+	}
+
+	/**
+	 * Sets lifetime of document
+	 *
+	 * @param string $ttl
+	 * @return Elastica_Document
+	 */
+	public function setTTL($ttl) {
+		return $this->add('_ttl', $ttl);
 	}
 
 	/**
@@ -193,7 +215,7 @@ class Elastica_Document {
 	 * @link http://www.elasticsearch.org/blog/2011/02/08/versioning.html
 	 */
 	public function setVersion($version) {
-		if($version !== '') {
+		if ($version !== '') {
 			$this->_version = (int) $version;
 		}
 		return $this;
@@ -227,5 +249,64 @@ class Elastica_Document {
 	 */
 	public function getParent() {
 		return $this->_parent;
+	}
+
+	/**
+	 * Set operation type
+	 *
+	 * @param string $optype Only accept create
+	 * @return Elastica_Document Current object
+	 */
+	public function setOpType($optype) {
+		$this->_optype = $optype;
+		return $this;
+	}
+
+	/**
+	 * Get operation type
+	 */
+	public function getOpType() {
+		return $this->_optype;
+	}
+
+	/**
+	 * Set percolate query param
+	 *
+	 * @param string $value percolator filter
+	 * @return Elastica_Document
+	 */
+	public function setPercolate($value = '*') {
+		$this->_percolate = $value;
+		return $this;
+	}
+
+	/**
+	 * Get percolate parameter
+	 *
+	 * @return string
+	 */
+	public function getPercolate() {
+		return $this->_percolate;
+	}
+
+	/**
+	 * Returns the document as an array
+	 * @return array
+	 */
+	public function toArray() {
+		$index = array('_index' => $this->getIndex(), '_type' => $this->getType(), '_id' => $this->getId());
+
+		$version = $this->getVersion();
+		if (!empty($version)) {
+			$index['_version'] = $version;
+		}
+
+		$parent = $this->getParent();
+		if (!empty($parent)) {
+			$index['_parent'] = $parent;
+		}
+
+		$params[] = $action;
+		$params[] = $doc->getData();
 	}
 }

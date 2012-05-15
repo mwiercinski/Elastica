@@ -2,13 +2,8 @@
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 
-class Elastica_ClusterTest extends PHPUnit_Framework_TestCase
+class Elastica_ClusterTest extends Elastica_Test
 {
-	public function setUp() {
-	}
-
-	public function tearDown() {
-	}
 
 	public function testGetNodeNames() {
 		$client = new Elastica_Client();
@@ -56,5 +51,26 @@ class Elastica_ClusterTest extends PHPUnit_Framework_TestCase
 		} catch(Elastica_Exception_Client $e) {
 			$this->assertTrue(true);
 		}
+	}
+
+	public function testGetIndexNames() {
+		$client = new Elastica_Client();
+		$cluster = $client->getCluster();
+
+		$indexName = 'elastica_test999';
+		$index = $this->_createIndex($indexName);
+		$index->delete();
+		$cluster->refresh();
+
+		// Checks that index does not exist
+		$indexNames = $cluster->getIndexNames();
+		$this->assertNotContains($index->getName(), $indexNames);
+
+		$index = $this->_createIndex($indexName);
+		$cluster->refresh();
+
+		// Now index should exist
+		$indexNames = $cluster->getIndexNames();
+		$this->assertContains($index->getname(), $indexNames);
 	}
 }
